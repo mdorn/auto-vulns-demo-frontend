@@ -19,8 +19,8 @@ In this case Curry and his team discovered they coudd take control of locks, eng
 
 Discovery of the vulnerabilty entailed:
 
-1) Inspecting traffic sent from the mobile app using Burp Proxy revealed a redundant specification of email address in request payload (i.e. why was the email address sent in the request when it was already encoded in the JWT used in the Authz header). This suggested an avenue for manipulating server-side logic.
-2) Fuzzing user input in an account registration form with Burp Intruder revealed a) validating email ownership was unnecessary (i.e. no confirmation email sent) and b) a faulty regex allowed control characters in email address, so that an attacker could register a new account using the target victim's email address with a CRLF character on the end, which as it turned out the application would treat as equivalent to the victim's identity. 
+1) Inspecting traffic sent from the mobile app using Burp Proxy revealed a redundant specification of email address in request payload (i.e. why was the email address sent in the request when it was already encoded in the JWT used in the Authz header?). This suggested an avenue for manipulating server-side logic.
+2) Fuzzing user input in an account registration form with Burp Intruder revealed a) validating email ownership was unnecessary (i.e. no confirmation email sent) and b) a faulty regex allowed control characters in the email address, so that an attacker could register a new account using the target victim's email address with a CRLF character on the end, which as it turned out the application would treat as equivalent to the victim's identity.
 
 ### Demo
 
@@ -42,7 +42,7 @@ Invalid payload fails:
 {"userName":"other.hyundai.owner@gmail.com","vin":"4Y1SL65848Z411439"}
 ```
 
-An attacker has registered `hyundai.owner%0d@gmail.com` and can use this to gain control over the victim's account.  Use this account with the same password as the victim user to see it in action or simply issue a call to the API with the payload below 
+An attacker has registered `hyundai.owner%0d@gmail.com` and can use this to gain control over the victim's account.  Use this account with the same password as the victim user to see it in action.
 
 The attacker's payload succeeds:
 
@@ -52,9 +52,9 @@ The attacker's payload succeeds:
 
 ### Remediation suggestions
 
-In OWASP terms, this vulnerability might be described as a combination of API1:2023 Broken Object Level Authorization and API3:2023 Broken Object Property Level Authorization. The application failed to ensure that only the legitimate account owner could access vehicle functionality, and part of the exploit involved manipulating the payload.
+In OWASP terms, this vulnerability might be described as a combination of API1:2023 Broken Object Level Authorization and API3:2023 Broken Object Property Level Authorization. The application failed to ensure that only the legitimate account owner could access vehicle functionality, and part of the exploit involved manipulating a property in the payload that was unnecessarliy exposed (user ID/email).
 
-Additionally we see an aspect of API2:2023 Broken Authentication at the user registration level which did not fully validate usernames.
+Additionally we see an aspect of API2:2023 Broken Authentication at the user registration level where usernames were not fully validated.
 
 In the demo implementation, even when an industrial strength IAM solution like Okta is used, not properly validating API calls can have secure consequences.  App developers should reduce the attack service by ensuring input is restricted to the minimal data needed and that user input is thoroughly validated.
 
@@ -80,4 +80,4 @@ https://demo.mdorn.xyz/login.html
 
 Valid login: `admin / s3cr3t`
 
-Example SQL injection that bypasses ModSecurity rules `admin '--`
+Example SQL injection that bypasses ModSecurity core ruleset `admin '--`
