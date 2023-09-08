@@ -100,7 +100,8 @@ function login(form) {
     var username = form.username.value;
     var password = form.password.value;
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("post", "http://localhost:5000/api/v1/auth", true);
+    // xmlhttp.open("post", "http://localhost:5000/api/v1/auth", true);
+    xmlhttp.open("post", "https://auto-vulns-demo-backend-ammbvc27xa-uc.a.run.app/api/v1/auth", true);
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState != 4) return;
         if (xmlhttp.status == 200) {
