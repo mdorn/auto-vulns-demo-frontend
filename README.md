@@ -76,6 +76,8 @@ TODO
 
 ### Demo
 
-https://demo.mdorn.xyz/login.html admin / s3cr3t
+https://demo.mdorn.xyz/login.html
 
-TODO
+Valid login: `admin / s3cr3t`
+
+Example SQL injection that bypasses ModSecurity rules `admin '--`
